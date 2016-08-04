@@ -32,7 +32,7 @@ def query():
             arrive_time1[i['station_train_code']] = 60*int(hour_str) + int(min_str)
             railway_info_dict1[i['station_train_code']] = i
         for i in railway_info2:
-            hour_str, min_str = i['arrive_time'] .split(':')
+            hour_str, min_str = i['start_time'] .split(':')
             start_time2[i['station_train_code']] = 60*int(hour_str) + int(min_str)
             railway_info_dict2[i['station_train_code']] = i
 
@@ -42,7 +42,7 @@ def query():
         for j in railway_info_dict1:
             for k in railway_info_dict2:
                 delta = start_time2[k] - arrive_time1[j]
-                if railway_info_dict1[j]['to_station_name'] == railway_info_dict2[k]['start_station_name'] and (((delta > 10) and (delta < 90)) or ((delta+1440 > 10 and delta+1440 < 90))):
+                if railway_info_dict1[j]['to_station_name'] == railway_info_dict2[k]['start_station_name'] and (((delta > 10) and (delta < 90)) or ((arrive_time1[j] +90 >=1440 and delta+1440 > 10 and delta+1440 < 90))):
                     print_str += "{}    {}    {}    {}    {}    {}    {}    {}   {}\n".format(
                         railway_info_dict1[j]['start_station_name'],
                         railway_info_dict1[j]['start_time'],
