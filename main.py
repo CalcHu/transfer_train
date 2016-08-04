@@ -52,7 +52,7 @@ def query():
                         railway_info_dict2[k]['start_time'],
                         railway_info_dict2[k]['station_train_code'],
                         railway_info_dict2[k]['arrive_time'],
-                        railway_info_dict2[k]['end_station_name'],
+                        railway_info_dict2[k]['to_station_name'],
                     )
 
     if is_transfer == '0':
