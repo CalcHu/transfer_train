@@ -7,7 +7,7 @@ from prettytable import PrettyTable
 def query():
     start_station = input('请输入出发站名: ')
     end_station = input('请输入目的地站名：')
-    is_transfer = input('是否需要中转：0，不需要；1，需要')
+    is_transfer = input('是否需要中转：0，不需要；1，需要:    ')
     if is_transfer in ['1']:
         transfer_station = input('请输入中转站名：')
     else:
