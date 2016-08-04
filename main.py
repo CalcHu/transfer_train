@@ -1,6 +1,7 @@
 import connection
 import config
 import time
+from prettytable import PrettyTable
 
 
 def query():
@@ -12,11 +13,8 @@ def query():
     else:
         transfer_station = None
 
-    print('st='+start_station)
-    print('end='+end_station)
     station_dict = get_station_dict()
     check_station_available(station_dict, start_station, end_station, transfer_station)
-    print_str = ''
     if is_transfer == '1':
         railway_info1 = get_railway_info(station_dict[start_station], station_dict[transfer_station])['data']['datas']
         railway_info2 = get_railway_info(station_dict[transfer_station], station_dict[end_station])['data']['datas']
@@ -36,15 +34,18 @@ def query():
             start_time2[i['station_train_code']] = 60*int(hour_str) + int(min_str)
             railway_info_dict2[i['station_train_code']] = i
 
-        print_str += "{}    {}    {}    {}    {}    {}    {}    {}   {}".format('始发站', '出发时间', '车次',
-                                                                                '终到时间', '中转站', '出发时间',
-                                                                                '车次', '终到时间', '终到站')+"\n"
+        table_data = PrettyTable(['始发站', '出发时间', '车次1', '到达中转站时间', '中转站', '中转站出发时间',
+                                  '车次2', '终到时间', '终到站'])
         for j in railway_info_dict1:
             for k in railway_info_dict2:
                 delta = start_time2[k] - arrive_time1[j]
-                if railway_info_dict1[j]['to_station_name'] == railway_info_dict2[k]['start_station_name'] and (((delta > 10) and (delta < 90)) or ((arrive_time1[j] +90 >=1440 and delta+1440 > 10 and delta+1440 < 90))):
-                    print_str += "{}    {}    {}    {}    {}    {}    {}    {}   {}\n".format(
-                        railway_info_dict1[j]['start_station_name'],
+                if railway_info_dict1[j]['to_station_name'] == railway_info_dict2[k]['from_station_name'] and \
+                        (
+                                    ((delta > 10) and (delta < 90)) or
+                                    ((arrive_time1[j] +90 >=1440 and delta+1440 > 10 and delta+1440 < 90))
+                        ):
+                    table_data.add_row([
+                        railway_info_dict1[j]['from_station_name'],
                         railway_info_dict1[j]['start_time'],
                         railway_info_dict1[j]['station_train_code'],
                         railway_info_dict1[j]['arrive_time'],
@@ -52,21 +53,17 @@ def query():
                         railway_info_dict2[k]['start_time'],
                         railway_info_dict2[k]['station_train_code'],
                         railway_info_dict2[k]['arrive_time'],
-                        railway_info_dict2[k]['to_station_name'],
-                    )
+                        railway_info_dict2[k]['to_station_name']
+                    ])
 
     if is_transfer == '0':
         railway_info = get_railway_info(station_dict[start_station], station_dict[end_station])['data']['datas']
-        print_str += '{}    {}    {}    {}    {}'.format('始发站', '出发时间', '车次', '终到时间', '终点站') + "\n"
-        for i in railway_info:
-            print_str += '{}    {}    {}    {}    {}'.format(i['start_station_name'],
-                                                             i['start_time'],
-                                                             i['station_train_code'],
-                                                             i['arrive_time'],
-                                                             i['to_station_name'])
-            print_str += "\n"
+        table_data = PrettyTable(['始发站', '出发时间', '车次', '终到时间', '终点站'])
 
-    print(print_str)
+        for i in railway_info:
+            table_data.add_row([i['from_station_name'], i['start_time'], i['station_train_code'],
+                               i['arrive_time'], i['to_station_name']])
+    print(table_data)
 
 
 def check_station_available(station_dict, *args):
